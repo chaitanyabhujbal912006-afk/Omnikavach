@@ -1,52 +1,33 @@
+import json
+import logging
 from app import schemas
+from src.agents import run_chief_agent # YOUR AI BRAIN
 
+logger = logging.getLogger(__name__)
 
 async def analyze_patient_data(data: schemas.PatientData) -> schemas.AnalysisReport:
-    """
-    Heuristic placeholder for sepsis risk until the full AI pipeline is integrated.
+    logger.info("Sending data to AI Brain...")
     
-    This function provides a basic rule-based analysis for sepsis risk assessment
-    using key clinical indicators:
-    - Elevated lactate (> 2.0 mmol/L)
-    - Low Mean Arterial Pressure (MAP < 65 mmHg)
+    notes_text = "\n".join([note.text for note in data.clinical_notes])
+    labs_text = "\n".join([f"{lab.timestamp}: {lab.itemid} - {lab.value}" for lab in data.lab_results])
     
-    Args:
-        data: PatientData containing lab results, vital signs, and clinical notes
-        
-    Returns:
-        AnalysisReport with risk score, detected anomalies, and clinical recommendations
-        
-    Note:
-        This is a temporary implementation pending integration of the full AI pipeline.
-        The current logic provides a foundation for testing the API infrastructure.
-    """
-    has_high_lactate = any(
-        lab.item_id.lower().find("lactate") != -1 and lab.value > 2.0
-        for lab in data.lab_results
-    )
-    has_low_map = any(
-        ("map" in vital.type.lower() or "mean arterial pressure" in vital.type.lower())
-        and vital.value < 65
-        for vital in data.vital_signs
-    )
-
-    if has_high_lactate or has_low_map:
-        anomalies = []
-        if has_high_lactate:
-            anomalies.append("Elevated Lactate (> 2.0)")
-        if has_low_map:
-            anomalies.append("Low Mean Arterial Pressure (MAP < 65)")
+    # Assuming ITEMID 51301 is WBC
+    wbc_array = [float(lab.value) for lab in data.lab_results if lab.itemid == 51301]
+    
+    # Call your AI
+    ai_json_response = run_chief_agent(notes_text, labs_text, wbc_array)
+    
+    try:
+        report_dict = json.loads(ai_json_response)
         return schemas.AnalysisReport(
-            risk_score=0.85,
-            detected_anomalies=anomalies,
-            recommendations=[
-                "Escalate to urgent sepsis protocol review",
-                "Repeat lactate and continuous hemodynamic monitoring",
-            ],
+            risk_score=0.85 if report_dict.get("safety_caveat") else 0.4,
+            detected_anomalies=report_dict.get("key_risks", []),
+            recommendations=[report_dict.get("timeline_summary", "")]
         )
-
-    return schemas.AnalysisReport(
-        risk_score=0.15,
-        detected_anomalies=["No high-risk hemodynamic or lactate triggers detected"],
-        recommendations=["Continue standard monitoring and reassessment"],
-    )
+    except Exception as e:
+        logger.error(f"Failed to parse AI output: {e}")
+        return schemas.AnalysisReport(
+            risk_score=0.0,
+            detected_anomalies=["AI Output Error"],
+            recommendations=["Check server logs"]
+        )

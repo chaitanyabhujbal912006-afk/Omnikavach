@@ -2,7 +2,7 @@ from pathlib import Path
 import asyncio
 import logging
 
-from fastapi import FastAPI, HTTPException, Request, Path
+from fastapi import FastAPI, HTTPException, Request, Path as FastApiPath
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -103,7 +103,7 @@ def get_patients() -> list[int]:
 
 
 @app.get("/patients/{patient_id}", response_model=schemas.PatientData)
-def get_patient(patient_id: int = Path(..., ge=1, le=999999, description="MIMIC subject ID (must be positive integer)")) -> schemas.PatientData:
+def get_patient(patient_id: int = FastApiPath(..., ge=1, le=999999, description="MIMIC subject ID (must be positive integer)")) -> schemas.PatientData:
     """Return full patient data loaded from MIMIC files for a specific subject."""
     logger.info("Requesting patient data for SUBJECT_ID: %s", patient_id)
     
@@ -139,7 +139,7 @@ def get_patient(patient_id: int = Path(..., ge=1, le=999999, description="MIMIC 
 
 
 @app.post("/analyze/{patient_id}", response_model=schemas.AnalysisReport)
-async def analyze_patient(patient_id: int = Path(..., ge=1, le=999999, description="MIMIC subject ID (must be positive integer)")) -> schemas.AnalysisReport:
+async def analyze_patient(patient_id: int = FastApiPath(..., ge=1, le=999999, description="MIMIC subject ID (must be positive integer)")) -> schemas.AnalysisReport:
     """Load MIMIC patient data and run the analysis engine."""
     logger.info("Risk Analysis requested for patient SUBJECT_ID: %s", patient_id)
 
@@ -166,7 +166,8 @@ async def analyze_patient(patient_id: int = Path(..., ge=1, le=999999, descripti
         )
 
     try:
-        analysis_result = await asyncio.wait_for(analyze_patient_data(patient_data), timeout=5)
+        # TIMEOUT INCREASED TO 20 SECONDS
+        analysis_result = await asyncio.wait_for(analyze_patient_data(patient_data), timeout=20)
         
         # Validate analysis result
         if analysis_result is None:
@@ -181,9 +182,10 @@ async def analyze_patient(patient_id: int = Path(..., ge=1, le=999999, descripti
         return analysis_result
         
     except asyncio.TimeoutError as exc:
-        logger.error("AI analysis timed out after 5 seconds for patient %s", patient_id)
+        # UPDATED ERROR LOGGING MESSAGES
+        logger.error("AI analysis timed out after 20 seconds for patient %s", patient_id)
         raise AIProcessingTimeout(
-            f"AI analysis timed out after 5 seconds for patient {patient_id}"
+            f"AI analysis timed out after 20 seconds for patient {patient_id}"
         ) from exc
     except Exception as exc:
         logger.error("Analysis engine error for patient %s: %s", patient_id, str(exc), exc_info=True)
