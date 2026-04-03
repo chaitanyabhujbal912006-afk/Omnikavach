@@ -1,0 +1,46 @@
+[
+  {
+    "patient_id": "PT-8824",
+    "name": "John Doe",
+    "status": "Deteriorating",
+    "history": [
+      {
+        "timestamp": "2026-04-03T08:00:00Z",
+        "vitals": { "heart_rate": 88, "blood_pressure": "120/80", "temp_c": 37.1 },
+        "labs": { "wbc": 11.2, "lactate": 1.2 },
+        "clinical_note": "Patient resting comfortably. No acute distress. Shift change handover complete."
+      },
+      {
+        "timestamp": "2026-04-03T12:00:00Z",
+        "vitals": { "heart_rate": 105, "blood_pressure": "105/65", "temp_c": 38.4 },
+        "labs": { "wbc": 15.4, "lactate": 2.8 },
+        "clinical_note": "Patient complains of chills. Slight confusion noted during questioning. Urine output decreased."
+      },
+      {
+        "timestamp": "2026-04-03T14:00:00Z",
+        "vitals": { "heart_rate": 118, "blood_pressure": "90/55", "temp_c": 39.0 },
+        "labs": { "wbc": 18.1, "lactate": 4.5 },
+        "clinical_note": "Rapid deterioration. Patient is lethargic and hypotensive. Suspected sepsis protocol initiated."
+      }
+    ]
+  },
+  {
+    "patient_id": "PT-9102",
+    "name": "Jane Smith",
+    "status": "Stable with Outlier Lab",
+    "history": [
+      {
+        "timestamp": "2026-04-03T09:00:00Z",
+        "vitals": { "heart_rate": 72, "blood_pressure": "118/76", "temp_c": 36.8 },
+        "labs": { "wbc": 6.5, "lactate": 0.9, "creatinine": 0.8 },
+        "clinical_note": "Patient is alert, eating breakfast. Preparing for possible discharge tomorrow."
+      },
+      {
+        "timestamp": "2026-04-03T13:00:00Z",
+        "vitals": { "heart_rate": 74, "blood_pressure": "120/78", "temp_c": 36.9 },
+        "labs": { "wbc": 0.1, "lactate": 0.8, "creatinine": 9.5 }, 
+        "clinical_note": "Patient remains stable. Watching TV. No complaints of pain or nausea."
+      }
+    ]
+  }
+]

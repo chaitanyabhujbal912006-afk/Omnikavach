@@ -1,0 +1,7 @@
+Sepsis is a life-threatening organ dysfunction caused by a dysregulated host response to infection. Early recognition and immediate treatment improve survival in ICU patients.
+
+Initial sepsis bundles typically include obtaining blood cultures before antibiotics, administering broad-spectrum antimicrobial therapy promptly, and measuring serum lactate. Elevated lactate can indicate tissue hypoperfusion even when blood pressure appears acceptable.
+
+In septic shock, clinicians commonly begin rapid crystalloid fluid resuscitation while closely monitoring hemodynamics, urine output, and mental status. Persistent hypotension after adequate fluid resuscitation may require vasopressor support to maintain perfusion.
+
+Ongoing reassessment is essential. Trends in lactate, creatinine, white blood cell count, and vital signs help determine whether the patient is improving or deteriorating, and whether therapy should be escalated.
