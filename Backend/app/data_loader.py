@@ -10,12 +10,76 @@ from app.exceptions import ClinicalDataIncompleteError
 from app import schemas
 
 
-DATASET_DIR = Path(
-    os.getenv(
-        "MIMIC_DATA_DIR",
-        str(Path(__file__).resolve().parents[2] / "mimic-iii-clinical-database-demo-1.4"),
+def _get_dataset_dir() -> Path:
+    """Get and validate the MIMIC dataset directory path."""
+    dataset_dir = Path(
+        os.getenv(
+            "MIMIC_DATA_DIR",
+            str(Path(__file__).resolve().parent.parent / "mimic-iii"),
+        )
     )
-)
+    
+    # Validate directory exists and is accessible
+    if not dataset_dir.exists():
+        raise ClinicalDataIncompleteError(
+            f"MIMIC dataset directory not found: {dataset_dir}. "
+            f"Set MIMIC_DATA_DIR environment variable or ensure mimic-iii directory exists."
+        )
+    
+    if not dataset_dir.is_dir():
+        raise ClinicalDataIncompleteError(
+            f"MIMIC path exists but is not a directory: {dataset_dir}"
+        )
+    
+    # Check read permissions
+    if not os.access(dataset_dir, os.R_OK):
+        raise ClinicalDataIncompleteError(
+            f"No read permissions for MIMIC directory: {dataset_dir}"
+        )
+    
+    return dataset_dir
+
+
+DATASET_DIR = _get_dataset_dir()
+
+
+def _validate_timestamp(timestamp_raw, context: str = "data") -> datetime:
+    """Validate and convert timestamp with proper error handling."""
+    if pd.isna(timestamp_raw):
+        raise ValueError(f"Invalid timestamp in {context}: {timestamp_raw}")
+    
+    try:
+        timestamp = pd.to_datetime(timestamp_raw, errors="coerce")
+        if pd.isna(timestamp):
+            raise ValueError(f"Could not parse timestamp in {context}: {timestamp_raw}")
+        
+        # Validate reasonable date range (1900-2100)
+        if timestamp.year < 1900 or timestamp.year > 2100:
+            raise ValueError(f"Timestamp out of reasonable range in {context}: {timestamp}")
+            
+        return timestamp.to_pydatetime()
+    except Exception as exc:
+        raise ValueError(f"Timestamp validation failed in {context}: {exc}") from exc
+
+
+def _sanitize_string(value, max_length: int = 1000, context: str = "data") -> str:
+    """Sanitize string values to prevent injection and ensure reasonable length."""
+    if pd.isna(value):
+        return "unknown"
+    
+    str_value = str(value).strip()
+    
+    # Length validation
+    if len(str_value) > max_length:
+        str_value = str_value[:max_length] + "..."
+    
+    # Basic sanitization
+    dangerous_patterns = ['<script', 'javascript:', 'onload=', 'onerror=', '\x00']
+    for pattern in dangerous_patterns:
+        if pattern in str_value.lower():
+            str_value = "[SANITIZED]"
+    
+    return str_value or "unknown"
 
 
 def _resolve_dataset_file(stem: str) -> Path:
@@ -101,20 +165,29 @@ def get_mimic_patient(subject_id: int) -> schemas.PatientData:
         rows["valuenum"] = pd.to_numeric(rows["valuenum"], errors="coerce")
         rows = rows.dropna(subset=["valuenum"])
         for _, row in rows.iterrows():
-            item_id_int = int(row["itemid"])
-            item_label = lab_label_map.get(item_id_int, f"ITEMID_{item_id_int}")
-            timestamp_raw = row.get("charttime")
-            timestamp = pd.to_datetime(timestamp_raw, errors="coerce")
-            if pd.isna(timestamp):
-                continue
-            lab_results.append(
-                schemas.LabResult(
-                    item_id=item_label,
-                    value=float(row["valuenum"]),
-                    unit=str(row.get("valueuom") or "unknown"),
-                    timestamp=timestamp.to_pydatetime(),
+            try:
+                item_id_int = int(row["itemid"])
+                item_label = _sanitize_string(lab_label_map.get(item_id_int, f"ITEMID_{item_id_int}"), 100, "lab item_id")
+                
+                timestamp_raw = row.get("charttime")
+                timestamp = _validate_timestamp(timestamp_raw, f"lab result for item_id {item_id_int}")
+                
+                # Validate lab value is within reasonable bounds
+                lab_value = float(row["valuenum"])
+                if lab_value < -1000 or lab_value > 10000:
+                    continue  # Skip unreasonable values
+                
+                lab_results.append(
+                    schemas.LabResult(
+                        item_id=item_label,
+                        value=lab_value,
+                        unit=_sanitize_string(row.get("valueuom") or "unknown", 20, "lab unit"),
+                        timestamp=timestamp,
+                    )
                 )
-            )
+            except (ValueError, TypeError) as exc:
+                # Skip malformed rows but continue processing
+                continue
 
     vital_signs: List[schemas.VitalSign] = []
     for rows in _subject_chunks(

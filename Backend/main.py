@@ -1,9 +1,8 @@
 from pathlib import Path
 import asyncio
 import logging
-from typing import List
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Path
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -84,16 +83,44 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
     )
 
 
-@app.get("/patients/summary", response_model=List[int])
-def get_patients_summary() -> List[int]:
+@app.get("/patients", response_model=list[int])
+def get_patients() -> list[int]:
     """Return available subject IDs from the MIMIC dataset."""
-    return get_available_subject_ids()
+    try:
+        return get_available_subject_ids()
+    except ClinicalDataIncompleteError as exc:
+        logger.error("Failed to load patient list: %s", str(exc))
+        raise HTTPException(
+            status_code=503,
+            detail="MIMIC dataset is not properly configured or accessible"
+        ) from exc
+    except Exception as exc:
+        logger.error("Unexpected error loading patients: %s", str(exc), exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail="Internal server error while loading patient data"
+        ) from exc
 
 
 @app.get("/patients/{patient_id}", response_model=schemas.PatientData)
-def get_patient(patient_id: int) -> schemas.PatientData:
+def get_patient(patient_id: int = Path(..., ge=1, le=999999, description="MIMIC subject ID (must be positive integer)")) -> schemas.PatientData:
     """Return full patient data loaded from MIMIC files for a specific subject."""
-    patient_data = get_mimic_patient(patient_id)
+    logger.info("Requesting patient data for SUBJECT_ID: %s", patient_id)
+    
+    try:
+        patient_data = get_mimic_patient(patient_id)
+    except ClinicalDataIncompleteError as exc:
+        logger.error("Data loading error for patient %s: %s", patient_id, str(exc))
+        raise HTTPException(
+            status_code=503,
+            detail="MIMIC dataset is not properly configured or accessible"
+        ) from exc
+    except Exception as exc:
+        logger.error("Unexpected error loading patient %s: %s", patient_id, str(exc), exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Internal server error while loading patient {patient_id}"
+        ) from exc
 
     if (
         len(patient_data.lab_results) == 0
@@ -105,24 +132,62 @@ def get_patient(patient_id: int) -> schemas.PatientData:
             detail=f"Patient with SUBJECT_ID {patient_id} not found in MIMIC sources",
         )
 
+    logger.info("Successfully loaded patient %s: %d labs, %d vitals, %d notes", 
+                patient_id, len(patient_data.lab_results), 
+                len(patient_data.vital_signs), len(patient_data.clinical_notes))
     return patient_data
 
 
 @app.post("/analyze/{patient_id}", response_model=schemas.AnalysisReport)
-async def analyze_patient(patient_id: int) -> schemas.AnalysisReport:
+async def analyze_patient(patient_id: int = Path(..., ge=1, le=999999, description="MIMIC subject ID (must be positive integer)")) -> schemas.AnalysisReport:
     """Load MIMIC patient data and run the analysis engine."""
     logger.info("Risk Analysis requested for patient SUBJECT_ID: %s", patient_id)
 
-    patient_data = get_mimic_patient(patient_id)
+    try:
+        patient_data = get_mimic_patient(patient_id)
+    except ClinicalDataIncompleteError as exc:
+        logger.error("Data loading error for patient analysis %s: %s", patient_id, str(exc))
+        raise HTTPException(
+            status_code=503,
+            detail="MIMIC dataset is not properly configured or accessible"
+        ) from exc
+    except Exception as exc:
+        logger.error("Unexpected error loading patient for analysis %s: %s", patient_id, str(exc), exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Internal server error while loading patient {patient_id} for analysis"
+        ) from exc
 
     if not patient_data.vital_signs or not patient_data.lab_results:
+        logger.warning("Insufficient data for analysis - patient %s has %d vitals and %d labs", 
+                      patient_id, len(patient_data.vital_signs), len(patient_data.lab_results))
         raise ClinicalDataIncompleteError(
             f"Patient {patient_id} is missing vital signs or laboratory results"
         )
 
     try:
-        return await asyncio.wait_for(analyze_patient_data(patient_data), timeout=5)
+        analysis_result = await asyncio.wait_for(analyze_patient_data(patient_data), timeout=5)
+        
+        # Validate analysis result
+        if analysis_result is None:
+            logger.error("Analysis engine returned None for patient %s", patient_id)
+            raise HTTPException(
+                status_code=500,
+                detail="Analysis engine failed to generate results"
+            )
+            
+        logger.info("Analysis completed for patient %s - Risk Score: %.2f", 
+                   patient_id, analysis_result.risk_score)
+        return analysis_result
+        
     except asyncio.TimeoutError as exc:
+        logger.error("AI analysis timed out after 5 seconds for patient %s", patient_id)
         raise AIProcessingTimeout(
             f"AI analysis timed out after 5 seconds for patient {patient_id}"
+        ) from exc
+    except Exception as exc:
+        logger.error("Analysis engine error for patient %s: %s", patient_id, str(exc), exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Analysis engine encountered an error for patient {patient_id}"
         ) from exc

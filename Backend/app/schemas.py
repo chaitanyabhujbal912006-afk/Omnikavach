@@ -1,6 +1,7 @@
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from datetime import datetime
+import re
 
 
 class LabResult(BaseModel):
@@ -8,16 +9,22 @@ class LabResult(BaseModel):
     
     item_id: str = Field(
         ...,
+        min_length=1,
+        max_length=100,
         description="Laboratory item identifier (e.g., 'Lactate', 'Glucose')",
         example="Lactate"
     )
     value: float = Field(
         ...,
+        ge=-1000.0,
+        le=10000.0,
         description="Numerical value of the lab result",
         example=3.5
     )
     unit: str = Field(
         ...,
+        min_length=1,
+        max_length=20,
         description="Unit of measurement for the lab value",
         example="mmol/L"
     )
@@ -26,6 +33,18 @@ class LabResult(BaseModel):
         description="Timestamp when the lab result was recorded",
         example="2024-01-15T10:30:00Z"
     )
+    
+    @validator('item_id')
+    def validate_item_id(cls, v):
+        if not re.match(r'^[a-zA-Z0-9_\-\s]+$', v):
+            raise ValueError('Item ID contains invalid characters')
+        return v.strip()
+    
+    @validator('unit')
+    def validate_unit(cls, v):
+        if not re.match(r'^[a-zA-Z0-9_\-\/\s%°µ]+$', v):
+            raise ValueError('Unit contains invalid characters')
+        return v.strip()
 
 
 class VitalSign(BaseModel):
@@ -33,11 +52,15 @@ class VitalSign(BaseModel):
     
     type: str = Field(
         ...,
+        min_length=1,
+        max_length=50,
         description="Type of vital sign being measured",
         example="Heart Rate"
     )
     value: float = Field(
         ...,
+        ge=0.0,
+        le=500.0,
         description="Numerical value of the vital sign",
         example=92.5
     )
@@ -46,6 +69,12 @@ class VitalSign(BaseModel):
         description="Timestamp when the vital sign was recorded",
         example="2024-01-15T10:30:00Z"
     )
+    
+    @validator('type')
+    def validate_type(cls, v):
+        if not re.match(r'^[a-zA-Z0-9_\-\s()]+$', v):
+            raise ValueError('Vital sign type contains invalid characters')
+        return v.strip()
 
 
 class ClinicalNote(BaseModel):
@@ -53,19 +82,47 @@ class ClinicalNote(BaseModel):
     
     note_id: str = Field(
         ...,
+        min_length=1,
+        max_length=50,
         description="Unique identifier for the clinical note",
         example="NOTE_12345"
     )
     text_content: str = Field(
         ...,
+        min_length=1,
+        max_length=10000,
         description="Full text content of the clinical note",
         example="Patient presents with signs of infection and elevated lactate levels."
     )
     category: str = Field(
         ...,
+        min_length=1,
+        max_length=50,
         description="Category or type of note",
         example="Nursing"
     )
+    
+    @validator('note_id')
+    def validate_note_id(cls, v):
+        if not re.match(r'^[a-zA-Z0-9_\-]+$', v):
+            raise ValueError('Note ID contains invalid characters')
+        return v.strip()
+    
+    @validator('text_content')
+    def validate_text_content(cls, v):
+        # Basic sanitization to prevent script injection
+        dangerous_patterns = ['<script', 'javascript:', 'onload=', 'onerror=']
+        content_lower = v.lower()
+        for pattern in dangerous_patterns:
+            if pattern in content_lower:
+                raise ValueError('Text content contains potentially dangerous content')
+        return v.strip()
+    
+    @validator('category')
+    def validate_category(cls, v):
+        if not re.match(r'^[a-zA-Z0-9_\-\s]+$', v):
+            raise ValueError('Category contains invalid characters')
+        return v.strip()
 
 
 class PatientData(BaseModel):
