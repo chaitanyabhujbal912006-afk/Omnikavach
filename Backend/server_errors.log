@@ -1,0 +1,125 @@
+2026-04-03 15:43:26,391 | INFO | main | Risk Analysis requested for patient ID: 101
+2026-04-03 15:43:31,395 | ERROR | main | AIProcessingTimeout on /analyze/101: AI analysis timed out after 5 seconds for patient 101
+Traceback (most recent call last):
+  File "C:\Users\Hp\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\tasks.py", line 488, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "C:\Users\Hp\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\tasks.py", line 702, in sleep
+    return await future
+           ^^^^^^^^^^^^
+asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\main.py", line 137, in analyze_patient
+    await asyncio.wait_for(asyncio.sleep(6), timeout=5)
+  File "C:\Users\Hp\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\tasks.py", line 487, in wait_for
+    async with timeouts.timeout(timeout):
+               ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\Hp\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\timeouts.py", line 114, in __aexit__
+    raise TimeoutError from exc_val
+TimeoutError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\fastapi\routing.py", line 120, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\fastapi\routing.py", line 674, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\fastapi\routing.py", line 328, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\main.py", line 139, in analyze_patient
+    raise AIProcessingTimeout(
+        f"AI analysis timed out after 5 seconds for patient {patient_id}"
+    ) from exc
+app.exceptions.AIProcessingTimeout: AI analysis timed out after 5 seconds for patient 101
+2026-04-03 15:44:29,055 | INFO | main | Risk Analysis requested for patient ID: 101
+2026-04-03 15:58:22,905 | INFO | main | Risk Analysis requested for patient ID: 101
+2026-04-03 15:58:27,355 | INFO | main | Risk Analysis requested for patient ID: 999
+2026-04-03 16:29:17,559 | ERROR | main | Unhandled exception on /patients/summary: Usecols do not match columns, columns expected but not found: ['SUBJECT_ID']
+Traceback (most recent call last):
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\starlette\middleware\cors.py", line 88, in __call__
+    await self.app(scope, receive, send)
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\starlette\routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\starlette\routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\fastapi\routing.py", line 134, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\fastapi\routing.py", line 120, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\fastapi\routing.py", line 674, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\fastapi\routing.py", line 330, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\starlette\concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\anyio\to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2518, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 1002, in run
+    result = context.run(func, *args)
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\main.py", line 90, in get_patients_summary
+    return get_available_subject_ids()
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\app\data_loader.py", line 73, in get_available_subject_ids
+    df = pd.read_csv(patients_file, usecols=["SUBJECT_ID"])
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\pandas\io\parsers\readers.py", line 873, in read_csv
+    return _read(filepath_or_buffer, kwds)
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\pandas\io\parsers\readers.py", line 300, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\pandas\io\parsers\readers.py", line 1645, in __init__
+    self._engine = self._make_engine(f, self.engine)
+                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\pandas\io\parsers\readers.py", line 1922, in _make_engine
+    return mapping[engine](f, **self.options)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\pandas\io\parsers\c_parser_wrapper.py", line 137, in __init__
+    self._validate_usecols_names(usecols, self.orig_names)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pradyumna\GitHub\OmniKavach\Backend\venv\Lib\site-packages\pandas\io\parsers\base_parser.py", line 662, in _validate_usecols_names
+    raise ValueError(
+    ...<2 lines>...
+    )
+ValueError: Usecols do not match columns, columns expected but not found: ['SUBJECT_ID']
+2026-04-03 16:31:24,500 | INFO | main | Risk Analysis requested for patient SUBJECT_ID: 10006
+2026-04-03 16:31:33,883 | INFO | main | Risk Analysis requested for patient SUBJECT_ID: 10013
