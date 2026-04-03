@@ -1,0 +1,202 @@
+ICU CLINICAL PROTOCOL
+Document ID: ICU-CC-2026-01
+Version: 1.0
+Effective Date: January 1, 2026
+Review Date: January 1, 2027
+Owner: Critical Care Committee
+Approved By: Medical Director, Intensive Care Unit
+
+1. PURPOSE AND SCOPE
+This protocol standardizes bedside management of critically ill adult patients in the intensive care unit (ICU). It applies to physicians, advanced practice providers, nursing staff, respiratory therapists, pharmacists, and consulting teams. The goal is to improve safety, reduce avoidable variation, and support timely recognition and treatment of life-threatening deterioration.
+
+This protocol is intended for operational use in adult ICUs. Pediatric, obstetric, burn, and transplant-specific pathways may supersede portions of this document. If conflict exists between this protocol and patient-specific specialist recommendations, the attending intensivist will adjudicate and document the rationale.
+
+2. ADMISSION AND INITIAL STABILIZATION (FIRST 60 MINUTES)
+2.1 Triage and Priority
+- Prioritize airway, breathing, circulation, disability (neurologic status), and exposure.
+- Assign immediate monitoring: continuous ECG, pulse oximetry, noninvasive blood pressure every 5 minutes until stable, temperature, urine output tracking.
+- Obtain baseline weight if feasible (actual or estimated).
+
+2.2 Immediate Orders
+- CBC with differential, CMP, magnesium, phosphorus, coagulation profile, venous or arterial blood gas, lactate, troponin if indicated, procalcitonin when sepsis is suspected.
+- Blood cultures x2 from separate sites before antibiotics when feasible without delaying therapy.
+- Type and screen if bleeding risk or potential transfusion.
+- Portable chest radiograph and focused imaging as clinically indicated.
+
+2.3 Access and Resuscitation
+- Establish two large-bore peripheral IV lines; place central venous access if vasoactive support is likely.
+- Begin isotonic crystalloid bolus for hypotension or hypoperfusion unless contraindicated.
+- If MAP remains below target after fluid challenge, initiate vasopressor support per Section 4.
+
+2.4 Documentation Checklist
+- Initial problem list and differential diagnosis.
+- Code status and surrogate decision maker.
+- Baseline neurologic exam and sedation target.
+- Device documentation: lines, drains, airway, and insertion times.
+
+3. HEMODYNAMIC MANAGEMENT
+3.1 Blood Pressure and Perfusion Targets
+- Standard MAP target: greater than or equal to 65 mmHg.
+- Consider higher MAP targets (70-75 mmHg) in chronic hypertension, severe cerebrovascular disease, or persistent oliguria despite adequate volume.
+- Track urine output hourly; goal generally greater than or equal to 0.5 mL/kg/hr unless individualized.
+
+3.2 Fluid Strategy
+- Use dynamic assessment when possible (passive leg raise response, stroke volume variation, bedside ultrasound trends).
+- Reassess after each bolus for signs of improved perfusion and for fluid intolerance (worsening oxygenation, crackles, rising CVP when available, edema).
+- Transition from liberal to conservative fluid strategy once shock resolves.
+
+3.3 Vasopressors and Inotropes
+- First-line vasopressor for septic or distributive shock: norepinephrine.
+- Add vasopressin when norepinephrine requirements escalate or to reduce catecholamine burden.
+- Consider epinephrine for refractory shock.
+- In suspected cardiogenic shock with low cardiac output, evaluate for inotropic support and urgent cardiology input.
+
+4. SEPSIS AND SEPTIC SHOCK PATHWAY
+4.1 Recognition Triggers
+Suspect sepsis in the presence of infection concern plus acute organ dysfunction signs such as hypotension, altered mentation, elevated lactate, worsening creatinine, rising bilirubin, thrombocytopenia, or hypoxemia.
+
+4.2 Time-Critical Bundle (Target: within 1 hour of recognition)
+- Draw lactate and repeat within 2-4 hours if initially elevated.
+- Obtain blood cultures before antimicrobials if this does not delay treatment.
+- Administer broad-spectrum antibiotics based on likely source and local resistance patterns.
+- Start fluid resuscitation for hypotension or lactate greater than or equal to 4 mmol/L.
+- Initiate vasopressors if hypotension persists after fluid administration.
+
+4.3 Source Control
+- Evaluate for drainable abscess, obstructed systems, infected lines, necrotic tissue, or surgical source.
+- Request procedural or surgical consultation early.
+- Remove or exchange suspected infected intravascular devices when clinically safe.
+
+4.4 Reassessment and De-escalation
+- Reassess antibiotics daily based on cultures, clinical response, and biomarkers.
+- De-escalate to targeted therapy promptly once pathogen and sensitivities are known.
+- Document antimicrobial indication, start date, and planned duration.
+
+5. RESPIRATORY FAILURE AND MECHANICAL VENTILATION
+5.1 Intubation Safety
+- Perform pre-intubation checklist: airway plan A/B/C, hemodynamic optimization, suction readiness, difficult airway tools, backup operator notification.
+- Pre-oxygenate with high-flow oxygen or bag-valve-mask with PEEP valve when needed.
+- Confirm tube placement with waveform capnography and chest radiograph.
+
+5.2 Lung-Protective Ventilation
+- Tidal volume target: approximately 6 mL/kg predicted body weight.
+- Keep plateau pressure less than or equal to 30 cm H2O when possible.
+- Apply PEEP and FiO2 strategy to maintain SpO2 generally 92-96% unless disease-specific targets apply.
+- Accept permissive hypercapnia when clinically appropriate and not contraindicated.
+
+5.3 Sedation and Analgesia
+- Use analgesia-first strategy and target light sedation unless deep sedation is necessary.
+- Perform daily sedation interruption and spontaneous breathing trial when criteria are met.
+- Assess pain, sedation depth, and delirium at defined intervals using standardized scales.
+
+5.4 Extubation Readiness
+- Hemodynamic stability without escalating vasopressors.
+- Adequate oxygenation on minimal-to-moderate support.
+- Successful spontaneous breathing trial.
+- Airway protection and secretion clearance capability.
+
+6. RENAL, METABOLIC, AND ENDOCRINE MANAGEMENT
+6.1 Acute Kidney Injury (AKI)
+- Monitor creatinine and urine output trends at least daily; more frequent in unstable patients.
+- Avoid nephrotoxic medications when alternatives exist.
+- Adjust medication dosing for current renal function.
+- Consult nephrology early for severe AKI, refractory acidosis, electrolyte instability, or volume overload.
+
+6.2 Electrolyte Targets (General ICU Defaults)
+- Potassium: maintain greater than or equal to 4.0 mmol/L in high arrhythmia risk.
+- Magnesium: maintain greater than or equal to 2.0 mg/dL in high arrhythmia risk.
+- Phosphorus repletion guided by respiratory and neuromuscular status.
+- Correct sodium abnormalities gradually unless life-threatening emergency mandates urgent treatment.
+
+6.3 Glycemic Control
+- Target blood glucose generally 140-180 mg/dL for most critically ill adults.
+- Use IV insulin protocol for unstable patients or those with variable nutritional intake.
+- Avoid hypoglycemia; implement immediate correction pathway for blood glucose below threshold.
+
+7. HEMATOLOGY, THROMBOSIS, AND TRANSFUSION
+7.1 Venous Thromboembolism Prophylaxis
+- Provide pharmacologic prophylaxis unless contraindicated.
+- Use mechanical prophylaxis when anticoagulation is unsafe.
+- Reassess bleeding versus thrombosis risk daily.
+
+7.2 Stress Ulcer Prophylaxis
+- Reserve for high-risk patients (mechanical ventilation, coagulopathy, major trauma, severe burns, or shock states).
+- Discontinue prophylaxis when risk factors resolve.
+
+7.3 Transfusion Guidance
+- Red blood cell transfusion threshold generally hemoglobin less than 7 g/dL in stable, non-bleeding patients.
+- Use higher thresholds for active ischemia, ongoing hemorrhage, or specific specialist guidance.
+- Reassess after each unit transfused and document indication clearly.
+
+8. INFECTION PREVENTION BUNDLES
+8.1 Central Line-Associated Bloodstream Infection (CLABSI) Prevention
+- Maximal sterile barrier precautions during insertion.
+- Chlorhexidine skin antisepsis and sterile dressing maintenance.
+- Daily review of line necessity with prompt removal when no longer required.
+
+8.2 Catheter-Associated Urinary Tract Infection (CAUTI) Prevention
+- Insert urinary catheters only for clear indications.
+- Daily catheter necessity review and early removal.
+- Maintain closed drainage system and dependent drainage positioning.
+
+8.3 Ventilator-Associated Event Prevention
+- Elevate head of bed 30-45 degrees unless contraindicated.
+- Oral care protocol and secretion management.
+- Daily readiness checks for spontaneous awakening and breathing trials.
+
+9. NEUROLOGIC AND DELIRIUM CARE
+9.1 Neurologic Monitoring
+- Conduct serial neurologic exams and pupillary checks according to diagnosis severity.
+- Escalate immediately for acute focal deficits, seizures, or sudden decrease in consciousness.
+
+9.2 Delirium Prevention and Management
+- Minimize benzodiazepine exposure when possible.
+- Promote sleep-wake cycles, early mobilization, vision/hearing aid access, and family reorientation.
+- Investigate reversible drivers: infection, hypoxemia, pain, withdrawal, metabolic disturbance.
+
+10. DAILY MULTIDISCIPLINARY ROUNDS STANDARD
+Every ICU patient should be discussed with a structured checklist:
+- Current diagnosis and overnight events.
+- Hemodynamic status, respiratory support, and neurologic status.
+- Antibiotic plan and culture data review.
+- Lines, tubes, drains: necessity and planned removal.
+- Nutrition status and bowel regimen.
+- DVT and stress ulcer prophylaxis appropriateness.
+- Mobility goal and rehabilitation barriers.
+- Family communication update and goals-of-care status.
+
+11. ESCALATION, RAPID RESPONSE, AND CONSULT TRIGGERS
+Immediate attending-level escalation is required for:
+- Persistent MAP below target despite escalating vasopressors.
+- Rising lactate with worsening acidosis despite resuscitation.
+- New refractory hypoxemia or escalating ventilator pressures.
+- Sustained ventricular arrhythmia or hemodynamically significant rhythm change.
+- Rapid neurologic decline or seizure activity.
+- Concern for missed source control, hemorrhage, or procedural complication.
+
+12. COMMUNICATION, SAFETY, AND HANDOFF STANDARDS
+- Use closed-loop communication for all critical orders.
+- Read back high-risk medication doses and vasopressor changes.
+- Use standardized handoff format at every transition of care.
+- Document contingency plans for anticipated deterioration.
+- Ensure family updates at least daily or with major status changes.
+
+13. DISCHARGE FROM ICU CRITERIA (GENERAL)
+A patient may be considered for transfer when all are met or clearly improving:
+- No need for invasive mechanical ventilation or high-level oxygen escalation.
+- Hemodynamic stability without continuous vasopressors.
+- No active life-threatening arrhythmia or escalating organ support requirement.
+- Monitoring and intervention needs can be safely delivered on lower-acuity unit.
+
+14. QUALITY METRICS AND AUDIT ELEMENTS
+Track and review monthly:
+- Time-to-antibiotics in suspected sepsis.
+- Lactate measurement and repeat compliance.
+- Ventilator days and unplanned extubation events.
+- CLABSI, CAUTI, and pressure injury rates.
+- ICU mortality, readmission within 48 hours, and length of stay trends.
+
+15. REFERENCES FOR LOCAL IMPLEMENTATION
+This protocol should be adapted to local formulary, staffing model, and institutional policy. Unit leadership should align this framework with local antimicrobial stewardship guidance, mechanical ventilation standards, and emergency response procedures.
+
+END OF DOCUMENT

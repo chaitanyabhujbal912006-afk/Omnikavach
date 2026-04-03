@@ -2,6 +2,8 @@ import os
 from supabase import create_client, Client
 from langchain_huggingface import HuggingFaceEmbeddings
 from dotenv import load_dotenv
+from langchain_community.document_loaders import PyPDFLoader, TextLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # 1. Load the secret keys from your .env file
 load_dotenv()
@@ -38,7 +40,7 @@ def ingest_guidelines(text_chunks, source_name):
     print("SUCCESS: Ingestion complete! Your AI Librarian has memorized the rules.")
 
 
-def retrieve_guidelines(query_text, top_k=2):
+def retrieve_guidelines(query_text, top_k=3):
     print(f"\nSearching AI Librarian for: '{query_text}'")
     
     # 1. Turn the doctor's question into a math vector
@@ -67,17 +69,51 @@ def retrieve_guidelines(query_text, top_k=2):
     return [row['content'] for row in results]
 
 
+def search_medical_guidelines(query_text):
+    """Tool-ready retrieval function for the Chief Agent.
+    Example query: 'signs of early sepsis'
+    Returns: top 3 matching guideline text chunks.
+    """
+    return retrieve_guidelines(query_text=query_text, top_k=3)
+
+
+def ingest_file(file_path):
+    print(f"Loading document: {file_path}")
+    
+    # 1. Check if it's a PDF or TXT and load it
+    if file_path.endswith('.pdf'):
+        loader = PyPDFLoader(file_path)
+    elif file_path.endswith('.txt'):
+        loader = TextLoader(file_path)
+    else:
+        print("Unsupported file type. Please use .pdf or .txt")
+        return
+        
+    documents = loader.load()
+    
+    # 2. Chunk the document (Break it into readable paragraphs for the AI)
+    # chunk_size: How many characters per chunk (500 is good for medical rules)
+    # chunk_overlap: Keep some context between chunks so sentences aren't cut in half
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=500, 
+        chunk_overlap=50
+    )
+    chunks = text_splitter.split_documents(documents)
+    print(f"Document split into {len(chunks)} chunks.")
+    
+    # 3. Extract the text and upload using your existing logic!
+    text_chunks = [chunk.page_content for chunk in chunks]
+    source_name = os.path.basename(file_path)
+    
+    # Call your existing ingestion function
+    ingest_guidelines(text_chunks, source_name)
+
+
 if __name__ == "__main__":
-    # These are the exact medical rules required to solve the hackathon problem statement
-    medical_rules = [
-        "Sepsis-3 Criteria: Sepsis should be defined as life-threatening organ dysfunction caused by a dysregulated host response to infection. Clinical criteria include an acute change in total SOFA score greater than 2 points.",
-        "Hyperlactatemia in Sepsis: A serum lactate level greater than 2 mmol/L is associated with highly severe disease and indicates tissue hypoperfusion. Levels above 4 mmol/L require immediate aggressive fluid resuscitation.",
-        "Erroneous Lab Results: A sudden, isolated drop in White Blood Cell count (WBC < 1.0) paired with a massive spike in Creatinine, in the absence of matching vitals or physical symptoms, strongly suggests a mislabeled sample or machine calibration error. A redraw is mandatory before clinical intervention.",
-    ]
-
-    # 1. We already ingested, so comment this out!
-    # ingest_guidelines(medical_rules, "ICU_Critical_Care_Guidelines_2026")
-
-    # 2. Test the retrieval!
-    test_question = "The patient's lactate level just hit 4.5. What should we do?"
-    retrieve_guidelines(test_question)
+    # Test the real file ingestion!
+    # Make sure to point this to where your text file actually is
+    test_file_path = "data/guidelines.txt"
+    ingest_file(test_file_path)
+    
+    # You can comment out the retrieval test for now while you ingest
+    # retrieve_guidelines("The patient's lactate level just hit 4.5. What should we do?")
