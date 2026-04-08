@@ -2362,3 +2362,53 @@ ConnectionResetError: [WinError 10054] An existing connection was forcibly close
 2026-04-08 21:41:54,841 | INFO | main | Requesting enriched data for SUBJECT_ID: 10019
 2026-04-08 21:41:54,848 | INFO | app.dashboard_loader | Patient 10019 cache hit (merged with history)
 2026-04-08 21:41:54,848 | INFO | main | Enriched data ready for patient 10019 — Risk: 79%
+2026-04-09 00:49:27,212 | INFO | app.dashboard_loader | Dashboard cache miss — loading MIMIC data (this may take ~60s)...
+2026-04-09 00:49:27,275 | WARNING | app.dashboard_loader | Could not load diagnosis for 10006: no such table: ADMISSIONS
+2026-04-09 00:49:27,275 | WARNING | app.dashboard_loader | Could not compute age for 10006: no such table: ADMISSIONS
+2026-04-09 00:49:27,303 | WARNING | app.dashboard_loader | Could not load diagnosis for 10011: no such table: ADMISSIONS
+2026-04-09 00:49:27,308 | WARNING | app.dashboard_loader | Could not compute age for 10011: no such table: ADMISSIONS
+2026-04-09 00:49:27,336 | WARNING | app.dashboard_loader | Could not load diagnosis for 10013: no such table: ADMISSIONS
+2026-04-09 00:49:27,337 | WARNING | app.dashboard_loader | Could not compute age for 10013: no such table: ADMISSIONS
+2026-04-09 00:49:27,360 | WARNING | app.dashboard_loader | Could not load diagnosis for 10017: no such table: ADMISSIONS
+2026-04-09 00:49:27,364 | WARNING | app.dashboard_loader | Could not compute age for 10017: no such table: ADMISSIONS
+2026-04-09 00:49:27,386 | WARNING | app.dashboard_loader | Could not load diagnosis for 10019: no such table: ADMISSIONS
+2026-04-09 00:49:27,386 | WARNING | app.dashboard_loader | Could not compute age for 10019: no such table: ADMISSIONS
+2026-04-09 00:49:27,407 | WARNING | app.dashboard_loader | Could not load diagnosis for 10026: no such table: ADMISSIONS
+2026-04-09 00:49:27,407 | WARNING | app.dashboard_loader | Could not compute age for 10026: no such table: ADMISSIONS
+2026-04-09 00:49:27,407 | INFO | app.dashboard_loader | Dashboard loaded and cached: 6 patients
+2026-04-09 00:51:53,046 | INFO | app.dashboard_loader | Dashboard cache miss — loading MIMIC data (this may take ~60s)...
+2026-04-09 00:51:53,079 | WARNING | app.dashboard_loader | Could not load diagnosis for 10006: no such table: ADMISSIONS
+2026-04-09 00:51:53,079 | WARNING | app.dashboard_loader | Could not compute age for 10006: no such table: ADMISSIONS
+2026-04-09 00:51:53,108 | WARNING | app.dashboard_loader | Could not load diagnosis for 10011: no such table: ADMISSIONS
+2026-04-09 00:51:53,109 | WARNING | app.dashboard_loader | Could not compute age for 10011: no such table: ADMISSIONS
+2026-04-09 00:51:53,134 | WARNING | app.dashboard_loader | Could not load diagnosis for 10013: no such table: ADMISSIONS
+2026-04-09 00:51:53,135 | WARNING | app.dashboard_loader | Could not compute age for 10013: no such table: ADMISSIONS
+2026-04-09 00:51:53,156 | WARNING | app.dashboard_loader | Could not load diagnosis for 10017: no such table: ADMISSIONS
+2026-04-09 00:51:53,158 | WARNING | app.dashboard_loader | Could not compute age for 10017: no such table: ADMISSIONS
+2026-04-09 00:51:53,177 | WARNING | app.dashboard_loader | Could not load diagnosis for 10019: no such table: ADMISSIONS
+2026-04-09 00:51:53,177 | WARNING | app.dashboard_loader | Could not compute age for 10019: no such table: ADMISSIONS
+2026-04-09 00:51:53,199 | WARNING | app.dashboard_loader | Could not load diagnosis for 10026: no such table: ADMISSIONS
+2026-04-09 00:51:53,199 | WARNING | app.dashboard_loader | Could not compute age for 10026: no such table: ADMISSIONS
+2026-04-09 00:51:53,199 | INFO | app.dashboard_loader | Dashboard loaded and cached: 6 patients
+2026-04-09 00:52:52,643 | INFO | app.dashboard_loader | Dashboard cache miss — loading MIMIC data (this may take ~60s)...
+2026-04-09 00:52:52,798 | INFO | app.dashboard_loader | Dashboard loaded and cached: 6 patients
+2026-04-09 00:54:08,099 | INFO | app.dashboard_loader | Dashboard cache miss — loading MIMIC data (this may take ~60s)...
+2026-04-09 00:54:08,398 | INFO | app.dashboard_loader | Dashboard loaded and cached: 6 patients
+2026-04-09 00:54:08,411 | INFO | app.dashboard_loader | Dashboard cache hit (merged with history) — returning 6 patients
+2026-04-09 00:54:10,719 | INFO | main | Requesting enriched data for SUBJECT_ID: 10019
+2026-04-09 00:54:10,763 | INFO | main | Enriched data ready for patient 10019 — Risk: 79%
+2026-04-09 00:54:10,772 | INFO | main | Requesting enriched data for SUBJECT_ID: 10019
+2026-04-09 00:54:10,775 | INFO | app.dashboard_loader | Patient 10019 cache hit (merged with history)
+2026-04-09 00:54:10,775 | INFO | main | Enriched data ready for patient 10019 — Risk: 79%
+2026-04-09 00:54:21,890 | INFO | main | Requesting enriched data for SUBJECT_ID: 10019
+2026-04-09 00:54:21,950 | INFO | main | Enriched data ready for patient 10019 — Risk: 79%
+2026-04-09 00:54:25,592 | INFO | main | Risk Analysis requested for patient SUBJECT_ID: 10019
+2026-04-09 00:54:25,653 | INFO | app.engine | Starting patient analysis...
+2026-04-09 00:54:28,175 | INFO | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-09 00:54:28,703 | INFO | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-09 00:54:29,192 | INFO | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-09 00:54:29,194 | WARNING | app.engine | LLM call failed ('Input to ChatPromptTemplate is missing variables {\'\\n    "handover_summary"\'}.  Expected: [\'\\n    "handover_summary"\', \'active_alerts\', \'labs\', \'notes\'] Received: [\'notes\', \'labs\', \'active_alerts\']\nNote: if you intended {\n    "handover_summary"} to be part of the string and not a variable, please escape it with double curly braces like: \'{{\n    "handover_summary"}}\'.\nFor troubleshooting, visit: https://docs.langchain.com/oss/python/langchain/errors/INVALID_PROMPT_INPUT ') - falling back to rule-based engine
+2026-04-09 00:54:29,198 | INFO | app.engine | OpenAI family communication fallback engaged: OPENAI_API_KEY is not configured.
+2026-04-09 00:54:29,201 | INFO | main | Analysis completed for patient 10019 - Risk Score: 0.79
+2026-04-09 00:54:29,523 | INFO | main | Requesting enriched data for SUBJECT_ID: 10019
+2026-04-09 00:54:29,562 | INFO | main | Enriched data ready for patient 10019 — Risk: 79%

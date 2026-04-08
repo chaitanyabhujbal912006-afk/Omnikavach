@@ -26,6 +26,7 @@ conn = sqlite3.connect(DB_PATH)
 
 tables_to_migrate = [
     {"table": "PATIENTS", "file": "PATIENTS", "index": "subject_id"},
+    {"table": "ADMISSIONS", "file": "ADMISSIONS", "index": "subject_id"},
     {"table": "CHARTEVENTS", "file": "CHARTEVENTS", "index": "subject_id"},
     {"table": "LABEVENTS", "file": "LABEVENTS", "index": "subject_id"},
     {"table": "NOTEEVENTS", "file": "NOTEEVENTS", "index": "subject_id"},

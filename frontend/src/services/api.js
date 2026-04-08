@@ -1,6 +1,23 @@
 import axios from 'axios';
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const resolveApiBaseUrl = () => {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+
+  if (import.meta.env.DEV) {
+    return '';
+  }
+
+  if (typeof window !== 'undefined') {
+    const { protocol, hostname } = window.location;
+    return `${protocol}//${hostname}:8000`;
+  }
+
+  return 'http://127.0.0.1:8000';
+};
+
+const apiBaseUrl = resolveApiBaseUrl();
 const tokenStorageKey = 'omnikavach-auth-token';
 
 const apiClient = axios.create({
@@ -40,6 +57,10 @@ apiClient.interceptors.response.use(
 );
 
 const withFriendlyError = (error, fallbackMessage) => {
+  if (!error?.response) {
+    throw new Error(`Unable to reach backend at ${apiBaseUrl}. Make sure the backend server is running.`);
+  }
+
   const detail = error?.response?.data?.detail;
   const message = typeof detail === 'string' ? detail : fallbackMessage;
   throw new Error(message);

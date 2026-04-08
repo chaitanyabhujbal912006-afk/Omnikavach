@@ -46,6 +46,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://127.0.0.1:3000",
     ],
+    allow_origin_regex=r"^https?://([A-Za-z0-9.-]+|localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -66,11 +67,6 @@ def health_check():
 @app.on_event("startup")
 async def startup_event() -> None:
     init_auth_db()
-
-
-@app.get("/health")
-def health() -> dict:
-    return {"status": "online"}
 
 
 @app.post("/auth/login", response_model=AuthResponse)
