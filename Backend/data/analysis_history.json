@@ -1,0 +1,60 @@
+{
+  "10006": {
+    "risk_score": 0.85,
+    "anomalies": [
+      "Severe leukocytosis",
+      "Persistent hypotension",
+      "Progressive deterioration"
+    ],
+    "recommendations": [
+      "The patient is experiencing severe leukocytosis, persistent hypotension, and progressive deterioration, with a rising WBC count trending up to 25.0. The exact timeline of these events is unclear due to the lack of specific timestamps in the clinical notes."
+    ],
+    "timestamp": "2026-04-04T00:44:05.245153"
+  },
+  "10019": {
+    "risk_score": 0.85,
+    "anomalies": [
+      "Severe leukocytosis",
+      "Persistent hypotension",
+      "Unstable blood pressure"
+    ],
+    "recommendations": [
+      "The patient's condition has fluctuated, with periods of severe leukocytosis and persistent hypotension, followed by improvements in stability, and ultimately a worsening of their critical condition. The patient's status has been marked by inconsistent blood pressure readings, including both hypertension and hypotension."
+    ],
+    "timestamp": "2026-04-04T01:05:04.103488"
+  },
+  "10013": {
+    "risk_score": 0.65,
+    "anomalies": [
+      "Severe leukocytosis",
+      "Persistent hypotension"
+    ],
+    "recommendations": [
+      "The patient experienced severe leukocytosis and persistent hypotension, but their condition improved over time with stable blood pressure and a decreasing WBC count. The overall trend suggests a gradual recovery, but the lack of specific timestamps makes it challenging to determine the exact progression."
+    ],
+    "timestamp": "2026-04-04T01:13:07.262299"
+  },
+  "10026": {
+    "risk_score": 0.6,
+    "anomalies": [
+      "Sepsis",
+      "Hypotension"
+    ],
+    "recommendations": [
+      "The patient's condition appears to be improving over time, with severe leukocytosis and hypotension giving way to stability and recovery. The WBC count is steadily improving and returning to baseline, indicating a positive trend in the patient's health."
+    ],
+    "timestamp": "2026-04-04T01:13:55.565697"
+  },
+  "10011": {
+    "risk_score": 0.17,
+    "anomalies": [
+      "Tachycardia (HR peak 158 bpm)"
+    ],
+    "recommendations": [
+      "Rule-based analysis identified 1 finding(s). LOW RISK \u2014 Patient appears stable based on available data.",
+      "Continue current management; monitor for relapse",
+      "Correlate with bedside clinical assessment"
+    ],
+    "timestamp": "2026-04-04T01:38:26.087507"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "10019": [
+    {
+      "item_id": "WBC",
+      "unit": "K/uL",
+      "start_hours_ago": 36,
+      "spacing_hours": 6,
+      "values": [18.6, 16.9, 14.8, 12.7, 10.9, 9.8, 8.7]
+    },
+    {
+      "item_id": "Creatinine",
+      "unit": "mg/dL",
+      "start_hours_ago": 36,
+      "spacing_hours": 6,
+      "values": [2.4, 2.2, 2.0, 1.8, 1.6, 1.4, 1.2]
+    }
+  ],
+  "10026": [
+    {
+      "item_id": "WBC",
+      "unit": "K/uL",
+      "start_hours_ago": 30,
+      "spacing_hours": 5,
+      "values": [15.2, 14.6, 13.4, 12.2, 11.1, 10.1, 9.4]
+    },
+    {
+      "item_id": "Creatinine",
+      "unit": "mg/dL",
+      "start_hours_ago": 30,
+      "spacing_hours": 5,
+      "values": [1.9, 1.8, 1.7, 1.6, 1.4, 1.3, 1.2]
+    }
+  ],
+  "10006": [
+    {
+      "item_id": "WBC",
+      "unit": "K/uL",
+      "start_hours_ago": 24,
+      "spacing_hours": 4,
+      "values": [13.7, 13.1, 12.5, 11.8, 10.8, 9.9, 9.1]
+    },
+    {
+      "item_id": "Creatinine",
+      "unit": "mg/dL",
+      "start_hours_ago": 24,
+      "spacing_hours": 4,
+      "values": [1.7, 1.6, 1.5, 1.4, 1.3, 1.2, 1.1]
+    }
+  ]
+}

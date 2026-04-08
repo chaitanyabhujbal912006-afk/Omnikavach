@@ -8,6 +8,41 @@ In fast-paced ICU environments, patient deterioration is often missed not becaus
 ##  Our Solution
 **OmniKavach** is a multi-agent orchestration platform that processes temporal clinical data in parallel. It acts as an autonomous clinical shield that ingests complex ICU histories, maps disease progression chronologically, and cross-references patterns against medical guidelines to generate actionable, safety-first Diagnostic Risk Reports.
 
+## Demo Features
+
+- Doctor/admin sign-in for protected clinical workflows
+- Typed notes, report upload, and clinical photo ingestion
+- AI diagnostic synthesis for clinicians
+- Family Communication mode with plain-language English + Hindi summaries
+- Statistical outlier guardrails that hold diagnosis revision pending redraw
+
+## Demo Run
+
+From the project root:
+
+```powershell
+npm run demo:start
+```
+
+Then open:
+
+```text
+http://127.0.0.1:5173/login
+```
+
+Demo accounts:
+
+```text
+admin@omnikavach.local / Admin@123
+doctor@omnikavach.local / Doctor@123
+```
+
+To stop the demo:
+
+```powershell
+npm run demo:stop
+```
+
 ---
 
 ##  Core Architecture (The Agentic Pipeline)

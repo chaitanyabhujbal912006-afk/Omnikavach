@@ -92,6 +92,51 @@
   }
 
   /* Status badges — dual theme */
+  .auth-panel {
+    border: 1px solid rgba(255, 255, 255, 0.58);
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.88), rgba(255,255,255,0.68)),
+      radial-gradient(circle at top right, rgba(14,165,233,0.12), transparent 34%);
+    box-shadow: 0 30px 70px rgba(15, 23, 42, 0.12);
+    backdrop-filter: blur(20px);
+  }
+  .dark .auth-panel {
+    border-color: rgba(51, 65, 85, 0.72);
+    background:
+      linear-gradient(145deg, rgba(15,23,42,0.84), rgba(15,23,42,0.66)),
+      radial-gradient(circle at top right, rgba(34,211,238,0.12), transparent 40%);
+    box-shadow: 0 34px 90px rgba(2, 6, 23, 0.5);
+  }
+  .auth-input {
+    @apply w-full rounded-2xl border border-white/70 bg-white/85 px-4 py-3 text-sm text-slate-800 outline-none ring-0 transition-all placeholder:text-slate-400
+      focus:border-blue-300 focus:shadow-[0_0_0_4px_rgba(59,130,246,0.08)]
+      dark:border-slate-700/70 dark:bg-slate-950/25 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-cyan-500/40 dark:focus:shadow-[0_0_0_4px_rgba(34,211,238,0.08)];
+  }
+  .auth-submit {
+    @apply mt-2 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-blue-200 bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition-all
+      hover:-translate-y-0.5 hover:bg-blue-500
+      disabled:cursor-not-allowed disabled:opacity-70
+      dark:border-cyan-400/20 dark:bg-cyan-500 dark:text-slate-950 dark:shadow-cyan-500/20 dark:hover:bg-cyan-400;
+  }
+  .note-input {
+    @apply w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition-all
+      placeholder:text-slate-400 focus:border-blue-300 focus:shadow-[0_0_0_4px_rgba(59,130,246,0.08)]
+      dark:border-slate-700/70 dark:bg-slate-950/30 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-cyan-500/40 dark:focus:shadow-[0_0_0_4px_rgba(34,211,238,0.08)];
+  }
+  .note-action-primary {
+    @apply inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-blue-200 bg-blue-600 px-4 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition-all
+      hover:-translate-y-0.5 hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70
+      dark:border-cyan-400/20 dark:bg-cyan-500 dark:text-slate-950 dark:shadow-cyan-500/20 dark:hover:bg-cyan-400;
+  }
+  .note-action-secondary {
+    @apply inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 text-sm font-semibold text-amber-700 transition-all
+      hover:-translate-y-0.5 hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60
+      dark:border-amber-400/20 dark:bg-amber-500/10 dark:text-amber-300 dark:hover:bg-amber-500/20;
+  }
+  .note-upload {
+    @apply block cursor-pointer rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 transition-all hover:border-blue-200 hover:bg-white
+      dark:border-slate-700/70 dark:bg-slate-950/20 dark:hover:border-cyan-500/30 dark:hover:bg-slate-950/30;
+  }
   .badge-critical {
     @apply px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border
       text-red-600 dark:text-red-400

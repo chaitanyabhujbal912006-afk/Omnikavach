@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllPatients } from '../services/api';
-import { AlertTriangle, Activity, Users, Shield, RefreshCw, ChevronRight } from 'lucide-react';
+import { AlertTriangle, Activity, Users, Shield, RefreshCw, ChevronRight, MessageCircleMore } from 'lucide-react';
 
 const STATUS = {
   critical: {
@@ -48,7 +48,6 @@ function PatientCard({ patient, onClick }) {
           </span>
         </div>
         <span className={cfg.badge}>
-          {patient.status === 'critical' ? 'Warning ' : ''}
           {cfg.label}
         </span>
       </div>
@@ -82,6 +81,58 @@ function PatientCard({ patient, onClick }) {
   );
 }
 
+function FamilyCard({ patient, onClick }) {
+  const family = patient.familyCommunication;
+  const previewTranslation = family?.translations?.[0]
+    || (family?.regional
+      ? {
+          label: family.regionalLanguage || 'Hindi',
+          text: family.regional,
+        }
+      : null);
+  return (
+    <button
+      onClick={() => onClick(patient.id)}
+      className="glass-panel w-full rounded-2xl p-5 text-left transition-all duration-200 hover:-translate-y-1"
+    >
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">{patient.bed}</p>
+          <h3 className="mt-1 text-base font-semibold text-slate-900 dark:text-white">{patient.name}</h3>
+        </div>
+        <span className="rounded-full border border-pink-200 bg-pink-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-pink-600 dark:border-pink-500/20 dark:bg-pink-500/10 dark:text-pink-300">
+          Family
+        </span>
+      </div>
+
+      {family ? (
+        <div className="space-y-3">
+          <div className="rounded-2xl border border-slate-200 bg-white/75 p-3 dark:border-slate-700/60 dark:bg-slate-950/20">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.24em] text-slate-400 dark:text-slate-500">English</p>
+            <p className="max-h-[5.5rem] overflow-hidden text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">{family.english}</p>
+          </div>
+          {previewTranslation && (
+            <div className="rounded-2xl border border-slate-200 bg-white/75 p-3 dark:border-slate-700/60 dark:bg-slate-950/20">
+              <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.24em] text-slate-400 dark:text-slate-500">{previewTranslation.label}</p>
+              <p className="max-h-[4.5rem] overflow-hidden text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">{previewTranslation.text}</p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-dashed border-slate-300/80 bg-slate-50/80 p-4 dark:border-slate-700/60 dark:bg-slate-900/20">
+          <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
+            Family communication will appear here after AI analysis is run for this patient.
+          </p>
+        </div>
+      )}
+
+      <div className="mt-4 flex items-center justify-end gap-1 text-[10px] text-slate-400 transition-colors hover:text-pink-500 dark:text-slate-600 dark:hover:text-pink-300">
+        Open Patient <ChevronRight className="h-3 w-3" />
+      </div>
+    </button>
+  );
+}
+
 function StatCard({ icon: Icon, label, value, color }) {
   return (
     <div className={`glass-panel rounded-2xl p-4 sm:p-5 ${color.border}`}>
@@ -101,6 +152,7 @@ export default function WardDashboard() {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState(new Date());
+  const [activeTab, setActiveTab] = useState('clinical');
   const navigate = useNavigate();
 
   const load = async () => {
@@ -129,7 +181,7 @@ export default function WardDashboard() {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="section-label mb-2">Clinical Command Center</p>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">Global Ward Monitor</h1>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">ICU Ward</h1>
             <p className="text-slate-400 dark:text-slate-500 text-xs sm:text-sm mt-1">
               ICU Bay A and B{' '}
               <span className="font-mono text-slate-500 dark:text-slate-400">
@@ -149,6 +201,34 @@ export default function WardDashboard() {
             Refresh
           </button>
         </div>
+      </div>
+
+      <div className="mb-6 inline-flex rounded-2xl border border-slate-200 bg-white p-1 shadow-sm dark:border-slate-700 dark:bg-slate-900/30 dark:shadow-none">
+        <button
+          type="button"
+          onClick={() => setActiveTab('clinical')}
+          className={`rounded-2xl px-4 py-2 text-xs font-semibold transition-colors ${
+            activeTab === 'clinical'
+              ? 'bg-blue-600 text-white dark:bg-cyan-500 dark:text-slate-950'
+              : 'text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-cyan-300'
+          }`}
+        >
+          Clinical Dashboard
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('family')}
+          className={`rounded-2xl px-4 py-2 text-xs font-semibold transition-colors ${
+            activeTab === 'family'
+              ? 'bg-pink-600 text-white dark:bg-pink-500'
+              : 'text-slate-500 hover:text-pink-600 dark:text-slate-400 dark:hover:text-pink-300'
+          }`}
+        >
+          <span className="inline-flex items-center gap-2">
+            <MessageCircleMore className="h-3.5 w-3.5" />
+            Family Communication
+          </span>
+        </button>
       </div>
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
@@ -189,10 +269,16 @@ export default function WardDashboard() {
             </div>
           ))}
         </div>
-      ) : (
+      ) : activeTab === 'clinical' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4">
           {patients.map((p) => (
             <PatientCard key={p.id} patient={p} onClick={(patientId) => navigate(`/patient/${patientId}`)} />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4">
+          {patients.map((p) => (
+            <FamilyCard key={p.id} patient={p} onClick={(patientId) => navigate(`/patient/${patientId}`)} />
           ))}
         </div>
       )}

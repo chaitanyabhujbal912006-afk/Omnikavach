@@ -1,4 +1,10 @@
 {
+  "scripts": {
+    "demo:start": "powershell -ExecutionPolicy Bypass -File .\\start-demo.ps1",
+    "demo:stop": "powershell -ExecutionPolicy Bypass -File .\\stop-demo.ps1",
+    "frontend:dev": "cd frontend && npm run dev -- --host 127.0.0.1 --port 5173",
+    "backend:dev": "cd Backend && ..\\.venv\\Scripts\\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000"
+  },
   "dependencies": {
     "axios": "^1.14.0",
     "lucide-react": "^1.7.0",

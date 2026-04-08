@@ -1,8 +1,12 @@
+import json
 import os
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv, dotenv_values
-from tools import detect_lab_anomalies
+try:
+    from src.tools import detect_lab_anomalies
+except ImportError:
+    from tools import detect_lab_anomalies
 load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -80,6 +84,53 @@ def run_lab_mapper(lab_results: str) -> str:
     response = chain.invoke({"labs": lab_results})
     return response.content
 
+
+def run_handover_agent(parsed_notes: str, mapped_labs: str, active_alerts: str) -> list[str]:
+    """Create a concise three-bullet ICU handover for the incoming shift."""
+
+    handover_prompt = ChatPromptTemplate.from_messages([
+        ("system", """You are an Expert ICU Attending Physician handing off a patient to the incoming night shift.
+Your goal is to eliminate cognitive overload. You must read the patient's recent notes, lab trends, and active risk alerts, and summarize the entire 12-hour shift into exactly THREE high-signal bullet points.
+
+RULES:
+1. ZERO fluff. Use medical shorthand where appropriate.
+2. Bullet 1 MUST cover the Primary Issue & Current Trajectory (Are they crashing or stabilizing?).
+3. Bullet 2 MUST cover Key Interventions & Lab Responses (What did we do, and did the numbers improve?).
+4. Bullet 3 MUST cover the "Watch-Out" / Immediate Action Items for the incoming doctor.
+
+OUTPUT STRICTLY VALID JSON. No markdown blocks.
+
+JSON SCHEMA:
+{
+    "handover_summary": [
+        "Bullet 1: [Primary Issue & Trajectory]",
+        "Bullet 2: [Interventions & Lab Shifts]",
+        "Bullet 3: [Action Items for Next Shift]"
+    ]
+}"""),
+        ("user", """
+Parsed Notes (Last 12h):
+{notes}
+
+Mapped Labs (Last 12h):
+{labs}
+
+Active Chief Agent Alerts:
+{active_alerts}
+""")
+    ])
+
+    chain = handover_prompt | llm
+    response = chain.invoke({
+        "notes": parsed_notes,
+        "labs": mapped_labs,
+        "active_alerts": active_alerts,
+    })
+
+    payload = json.loads(response.content.replace('```json', '').replace('```', '').strip())
+    bullets = payload.get("handover_summary", []) or []
+    return [str(item).strip() for item in bullets[:3]]
+
 # Update your test block at the bottom to test both!
 if __name__ == "__main__":
     # Test Note Parser
@@ -119,21 +170,27 @@ def run_chief_agent(raw_notes: str, raw_labs_text: str, wbc_array: list[float]) 
         {{
             "timeline_summary": "Short 2 sentence summary",
             "key_risks": ["Risk 1", "Risk 2"],
+            "risk_score": 0.85,
             "safety_caveat": "Warning text or null"
         }}"""),
         
         ("user", "Parsed Notes:\n{notes}\n\nMapped Labs:\n{labs}\n\nMath Anomaly Detector (WBC Spike): {wbc_spike}")
     ])
     
-    chain = prompt | llm
-    response = chain.invoke({
+    chains = prompt | llm
+    response = chains.invoke({
         "notes": parsed_notes,
         "labs": mapped_labs,
         "wbc_spike": is_wbc_dangerous
     })
-    
-    # Clean up output in case the LLM wraps it in markdown like ```json ... ```
-    return response.content.replace('```json', '').replace('```', '').strip()
+
+    chief_payload = json.loads(response.content.replace('```json', '').replace('```', '').strip())
+
+    active_alerts = ", ".join(chief_payload.get("key_risks", [])) or "No major alerts."
+    handover_summary = run_handover_agent(parsed_notes, mapped_labs, active_alerts)
+    chief_payload["handover_summary"] = handover_summary
+
+    return json.dumps(chief_payload)
 
 # Update your test block!
 if __name__ == "__main__":

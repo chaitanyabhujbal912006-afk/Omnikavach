@@ -36,13 +36,13 @@ class LabResult(BaseModel):
     
     @validator('item_id')
     def validate_item_id(cls, v):
-        if not re.match(r'^[a-zA-Z0-9_\-\s]+$', v):
+        if not re.match(r'^[a-zA-Z0-9_\-\s\(\)\#\%\,\.\/\+]+$', v):
             raise ValueError('Item ID contains invalid characters')
         return v.strip()
     
     @validator('unit')
     def validate_unit(cls, v):
-        if not re.match(r'^[a-zA-Z0-9_\-\/\s%°µ]+$', v):
+        if not re.match(r'^[a-zA-Z0-9_\-\/\s%°µ\#\(\)\.]+$', v):
             raise ValueError('Unit contains invalid characters')
         return v.strip()
 
@@ -90,7 +90,7 @@ class ClinicalNote(BaseModel):
     text_content: str = Field(
         ...,
         min_length=1,
-        max_length=10000,
+        max_length=500000,
         description="Full text content of the clinical note",
         example="Patient presents with signs of infection and elevated lactate levels."
     )
@@ -110,7 +110,6 @@ class ClinicalNote(BaseModel):
     
     @validator('text_content')
     def validate_text_content(cls, v):
-        # Basic sanitization to prevent script injection
         dangerous_patterns = ['<script', 'javascript:', 'onload=', 'onerror=']
         content_lower = v.lower()
         for pattern in dangerous_patterns:
@@ -165,6 +164,18 @@ class AnalysisReport(BaseModel):
         description="Clinical recommendations based on the analysis",
         example=["Consider blood culture", "Monitor lactate trends", "Review antibiotic coverage"]
     )
+    handover_summary: List[str] = Field(
+        default_factory=list,
+        description="Exactly three high-signal shift handover bullets for the incoming clinician."
+    )
+    family_communication: Optional["FamilyCommunication"] = Field(
+        default=None,
+        description="Compassionate family-facing explanation in English with local-language translations."
+    )
+    outlier_alert: Optional["OutlierAlert"] = Field(
+        default=None,
+        description="Probable lab error flag that prevents silent diagnosis revision."
+    )
     safety_disclaimer: str = Field(
         default="This is a decision-support tool only. Clinical judgment and direct patient assessment take priority.",
         description="Important safety disclaimer for clinical use",
@@ -180,3 +191,117 @@ class AnalysisReport(BaseModel):
                 "safety_disclaimer": "This is a decision-support tool only. Clinical judgment and direct patient assessment take priority."
             }
         }
+
+
+# ============================================================
+# Enriched schemas for the Frontend Dashboard (Hybrid Option C)
+# ============================================================
+
+class TimelineData(BaseModel):
+    """Pre-computed timeline data for charts."""
+    labels: List[str]
+    lactate: List[float]
+    heartRate: List[float]
+    wbc: List[float]
+    creatinine: List[float]
+    lactateOutlierIndex: int = -1
+    normalLactateMax: float = 2.0
+
+
+class NoteDisplay(BaseModel):
+    """Display-ready clinical note."""
+    id: str
+    time: str
+    author: str
+    role: str
+    text: str
+    canDelete: bool = False
+
+
+class RiskFactor(BaseModel):
+    """Identified risk factor."""
+    label: str
+    severity: str  # "critical" | "warning"
+
+
+class GuidelineRef(BaseModel):
+    """Referenced medical guideline."""
+    name: str
+    source: str
+    type: str  # "protocol" | "dataset" | "guideline"
+
+
+class AgentTraceEntry(BaseModel):
+    """Execution trace for a single AI agent."""
+    agent: str
+    status: str  # "complete" | "flagged" | "error"
+    output: str
+
+
+class FamilyTranslation(BaseModel):
+    """Single family-facing translation variant."""
+    code: str
+    label: str
+    text: str
+
+
+class FamilyCommunication(BaseModel):
+    """Family-facing update with English plus local-language variants."""
+    updatedWindow: str = "Last 12 hours"
+    english: str
+    regionalLanguage: str = "Hindi"
+    regional: str = ""
+    translations: List[FamilyTranslation] = Field(default_factory=list)
+
+
+class OutlierAlert(BaseModel):
+    """Probable lab error that should not be incorporated silently."""
+    isProbableLabError: bool = False
+    affectedLab: str = ""
+    affectedValue: float = 0.0
+    message: str = ""
+    actionRequired: str = ""
+
+
+class AISynthesis(BaseModel):
+    """AI diagnostic synthesis for display."""
+    chiefSummary: str = ""
+    riskFactors: List[RiskFactor] = Field(default_factory=list)
+    guidelinesReferenced: List[GuidelineRef] = Field(default_factory=list)
+    agentTrace: List[AgentTraceEntry] = Field(default_factory=list)
+    handoverSummary: List[str] = Field(default_factory=list)
+    familyCommunication: Optional[FamilyCommunication] = None
+    outlierAlert: Optional[OutlierAlert] = None
+
+
+class EnrichedPatient(BaseModel):
+    """Full enriched patient data for the detail view."""
+    id: str
+    bed: str
+    name: str
+    age: int
+    mrn: str
+    status: str
+    condition: str
+    admitDate: str
+    physician: str
+    riskScore: int
+    notes: List[NoteDisplay] = Field(default_factory=list)
+    highlightedWords: List[str] = Field(default_factory=list)
+    timeline: Optional[TimelineData] = None
+    aiSynthesis: Optional[AISynthesis] = None
+
+
+class PatientSummary(BaseModel):
+    """Patient summary card for the ward dashboard."""
+    id: str
+    bed: str
+    name: str
+    age: int
+    status: str  # "critical" | "warning" | "stable"
+    condition: str
+    riskScore: int
+    familyCommunication: Optional[FamilyCommunication] = None
+
+
+AnalysisReport.model_rebuild()

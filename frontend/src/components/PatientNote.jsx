@@ -1,4 +1,4 @@
-import { User, Clock } from 'lucide-react';
+import { User, Clock, Trash2 } from 'lucide-react';
 
 const ROLE_STYLES = {
   Attending:    'text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-500/10 border-cyan-200 dark:border-cyan-500/25',
@@ -21,7 +21,7 @@ function buildSegments(text, words) {
   }));
 }
 
-export default function PatientNote({ note, highlightedWords = [] }) {
+export default function PatientNote({ note, highlightedWords = [], onDelete, deleting = false }) {
   const segments = buildSegments(note.text, highlightedWords);
   const roleStyle = ROLE_STYLES[note.role] ?? FALLBACK_ROLE;
 
@@ -41,6 +41,17 @@ export default function PatientNote({ note, highlightedWords = [] }) {
           </div>
         </div>
         <div className="flex items-center gap-1 text-slate-400 dark:text-slate-500">
+          {note.canDelete && (
+            <button
+              type="button"
+              onClick={() => onDelete?.(note.id)}
+              disabled={deleting}
+              className="mr-2 rounded-lg p-1 text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-500 disabled:cursor-not-allowed disabled:opacity-60 dark:hover:bg-rose-500/10 dark:hover:text-rose-300"
+              title="Delete this uploaded note"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          )}
           <Clock className="w-3 h-3" />
           <span className="text-[11px] font-mono">{note.time}</span>
         </div>

@@ -1,119 +1,170 @@
+"""
+SQLite-backed RAG module for medical guidelines.
+Replaces the Supabase-dependent version with a local SQLite + numpy cosine similarity approach.
+"""
+
 import os
-from supabase import create_client, Client
-from langchain_huggingface import HuggingFaceEmbeddings
-from dotenv import load_dotenv
-from langchain_community.document_loaders import PyPDFLoader, TextLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+import json
+import sqlite3
+import logging
+from pathlib import Path
+from typing import List, Optional
 
-# 1. Load the secret keys from your .env file
-load_dotenv()
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+logger = logging.getLogger(__name__)
 
-# 2. Connect to your Supabase database
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# Database path
+DB_DIR = Path(__file__).resolve().parent.parent / "data"
+DB_PATH = DB_DIR / "guidelines.db"
 
-# 3. Load the AI Embedding Model (this runs locally and is free/fast)
-print("Loading AI Embedding model (this might take a few seconds the first time)...")
-embeddings_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+# Lazy-loaded embedding model
+_embeddings_model = None
 
 
-def ingest_guidelines(text_chunks, source_name):
-    print(f"Ingesting {len(text_chunks)} medical guidelines into Supabase...")
+def _get_embeddings_model():
+    """Lazy-load the HuggingFace embeddings model."""
+    global _embeddings_model
+    if _embeddings_model is None:
+        try:
+            from langchain_huggingface import HuggingFaceEmbeddings
+            logger.info("Loading AI Embedding model (first time may take a few seconds)...")
+            _embeddings_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        except ImportError:
+            logger.warning("langchain_huggingface not installed — RAG disabled")
+            return None
+        except Exception as e:
+            logger.warning("Failed to load embedding model: %s", str(e))
+            return None
+    return _embeddings_model
 
-    # Turn the text into math vectors
-    embeddings = embeddings_model.embed_documents(text_chunks)
 
-    # Prepare the data packet
-    data_to_insert = []
-    for i in range(len(text_chunks)):
-        data_to_insert.append(
-            {
-                "content": text_chunks[i],
-                "metadata": {"source": source_name, "chunk_index": i},
-                "embedding": embeddings[i],
-            }
+def _init_db():
+    """Create the SQLite table if it doesn't exist."""
+    DB_DIR.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(str(DB_PATH))
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS medical_guidelines (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            content TEXT NOT NULL,
+            metadata TEXT,
+            embedding TEXT NOT NULL
         )
+    """)
+    conn.commit()
+    conn.close()
 
-    # Push to Supabase
-    supabase.table("medical_guidelines").insert(data_to_insert).execute()
-    print("SUCCESS: Ingestion complete! Your AI Librarian has memorized the rules.")
+
+def _cosine_similarity(vec_a: list, vec_b: list) -> float:
+    """Compute cosine similarity between two vectors without numpy."""
+    dot = sum(a * b for a, b in zip(vec_a, vec_b))
+    norm_a = sum(a * a for a in vec_a) ** 0.5
+    norm_b = sum(b * b for b in vec_b) ** 0.5
+    if norm_a == 0 or norm_b == 0:
+        return 0.0
+    return dot / (norm_a * norm_b)
 
 
-def retrieve_guidelines(query_text, top_k=3):
-    print(f"\nSearching AI Librarian for: '{query_text}'")
+def ingest_guidelines(text_chunks: List[str], source_name: str):
+    """Ingest medical guideline text chunks into SQLite with embeddings."""
+    model = _get_embeddings_model()
+    if model is None:
+        logger.warning("Cannot ingest guidelines — embedding model not available")
+        return
+
+    _init_db()
+    logger.info("Ingesting %d medical guidelines into SQLite...", len(text_chunks))
     
-    # 1. Turn the doctor's question into a math vector
-    query_vector = embeddings_model.embed_query(query_text)
+    embeddings = model.embed_documents(text_chunks)
     
-    # 2. Ask Supabase to find the closest matches using that SQL function we built earlier
-    response = supabase.rpc(
-        "match_guidelines",
-        {
-            "query_embedding": query_vector,
-            "match_threshold": 0.1, # Must be at least 10% relevant
-            "match_count": top_k
-        }
-    ).execute()
-    
-    # 3. Clean up the results to hand to the Chief Agent
-    results = response.data
-    if not results:
-        print("No relevant guidelines found.")
+    conn = sqlite3.connect(str(DB_PATH))
+    for i, (chunk, embedding) in enumerate(zip(text_chunks, embeddings)):
+        metadata = json.dumps({"source": source_name, "chunk_index": i})
+        conn.execute(
+            "INSERT INTO medical_guidelines (content, metadata, embedding) VALUES (?, ?, ?)",
+            (chunk, metadata, json.dumps(embedding))
+        )
+    conn.commit()
+    conn.close()
+    logger.info("SUCCESS: Ingestion complete — %d chunks stored in SQLite.", len(text_chunks))
+
+
+def retrieve_guidelines(query_text: str, top_k: int = 3) -> List[str]:
+    """Retrieve the most relevant guideline chunks for a query using cosine similarity."""
+    model = _get_embeddings_model()
+    if model is None:
+        logger.warning("Cannot retrieve guidelines — embedding model not available")
         return []
-        
-    for idx, row in enumerate(results):
-        print(f"\n--- Rule Found (Match Score: {round(row['similarity']*100)}%) ---")
-        print(row['content'])
-        
-    return [row['content'] for row in results]
+
+    if not DB_PATH.exists():
+        logger.warning("No guidelines database found at %s", DB_PATH)
+        return []
+    
+    logger.info("Searching AI Librarian for: '%s'", query_text)
+    query_vector = model.embed_query(query_text)
+    
+    conn = sqlite3.connect(str(DB_PATH))
+    rows = conn.execute("SELECT content, embedding FROM medical_guidelines").fetchall()
+    conn.close()
+    
+    if not rows:
+        logger.info("No guidelines stored in database.")
+        return []
+    
+    # Compute similarities
+    scored = []
+    for content, embedding_json in rows:
+        stored_embedding = json.loads(embedding_json)
+        similarity = _cosine_similarity(query_vector, stored_embedding)
+        if similarity > 0.1:  # minimum relevance threshold
+            scored.append((similarity, content))
+    
+    scored.sort(key=lambda x: x[0], reverse=True)
+    results = scored[:top_k]
+    
+    for idx, (score, content) in enumerate(results):
+        logger.info("--- Rule Found (Match Score: %d%%) ---", round(score * 100))
+    
+    return [content for _, content in results]
 
 
-def search_medical_guidelines(query_text):
-    """Tool-ready retrieval function for the Chief Agent.
-    Example query: 'signs of early sepsis'
-    Returns: top 3 matching guideline text chunks.
-    """
+def search_medical_guidelines(query_text: str) -> List[str]:
+    """Tool-ready retrieval function for the Chief Agent."""
     return retrieve_guidelines(query_text=query_text, top_k=3)
 
 
-def ingest_file(file_path):
-    print(f"Loading document: {file_path}")
+def ingest_file(file_path: str):
+    """Load a document file and ingest its chunks into the SQLite vector store."""
+    try:
+        from langchain_community.document_loaders import PyPDFLoader, TextLoader
+        from langchain_text_splitters import RecursiveCharacterTextSplitter
+    except ImportError:
+        logger.warning("langchain document loaders not installed — cannot ingest file")
+        return
+
+    logger.info("Loading document: %s", file_path)
     
-    # 1. Check if it's a PDF or TXT and load it
     if file_path.endswith('.pdf'):
         loader = PyPDFLoader(file_path)
     elif file_path.endswith('.txt'):
         loader = TextLoader(file_path)
     else:
-        print("Unsupported file type. Please use .pdf or .txt")
+        logger.warning("Unsupported file type. Please use .pdf or .txt")
         return
         
     documents = loader.load()
     
-    # 2. Chunk the document (Break it into readable paragraphs for the AI)
-    # chunk_size: How many characters per chunk (500 is good for medical rules)
-    # chunk_overlap: Keep some context between chunks so sentences aren't cut in half
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=500, 
         chunk_overlap=50
     )
     chunks = text_splitter.split_documents(documents)
-    print(f"Document split into {len(chunks)} chunks.")
+    logger.info("Document split into %d chunks.", len(chunks))
     
-    # 3. Extract the text and upload using your existing logic!
     text_chunks = [chunk.page_content for chunk in chunks]
     source_name = os.path.basename(file_path)
     
-    # Call your existing ingestion function
     ingest_guidelines(text_chunks, source_name)
 
 
 if __name__ == "__main__":
-    # Test the real file ingestion!
-    # Make sure to point this to where your text file actually is
-    test_file_path = "data/guidelines.txt"
+    test_file_path = str(Path(__file__).resolve().parent.parent / "data" / "guidelines.txt")
     ingest_file(test_file_path)
-    
-    # You can comment out the retrieval test for now while you ingest
-    # retrieve_guidelines("The patient's lactate level just hit 4.5. What should we do?")

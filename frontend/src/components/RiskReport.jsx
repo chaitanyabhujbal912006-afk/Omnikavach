@@ -1,4 +1,4 @@
-import { ShieldAlert, BookOpen, Bot, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
+import { ShieldAlert, BookOpen, Bot, CheckCircle2, AlertTriangle, XCircle, ClipboardList } from 'lucide-react';
 
 const SEVERITY = {
   critical: {
@@ -66,6 +66,40 @@ export default function RiskReport({ synthesis, riskScore }) {
         </div>
         <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">{synthesis.chiefSummary}</p>
       </div>
+
+      {synthesis.handoverSummary?.length > 0 && (
+        <div className="panel rounded-2xl p-4 shadow-sm dark:shadow-none">
+          <div className="mb-3 flex items-center gap-2">
+            <ClipboardList className="h-4 w-4 text-indigo-600 dark:text-indigo-300" />
+            <p className="section-label">Shift Handover</p>
+          </div>
+          <div className="space-y-2">
+            {synthesis.handoverSummary.map((bullet, index) => (
+              <div
+                key={index}
+                className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] leading-relaxed text-slate-700 dark:border-slate-700/50 dark:bg-slate-900/25 dark:text-slate-300"
+              >
+                {bullet}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {synthesis.outlierAlert?.isProbableLabError && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 shadow-sm dark:border-amber-500/20 dark:bg-amber-500/10 dark:shadow-none">
+          <div className="mb-2 flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-300" />
+            <p className="section-label text-amber-700 dark:text-amber-300">Probable Lab Error Hold</p>
+          </div>
+          <p className="text-[11px] leading-relaxed text-amber-700/90 dark:text-amber-100/80">
+            {synthesis.outlierAlert.message}
+          </p>
+          <p className="mt-2 text-[11px] font-medium text-amber-800 dark:text-amber-200">
+            {synthesis.outlierAlert.actionRequired}
+          </p>
+        </div>
+      )}
 
       {synthesis.riskFactors?.length > 0 && (
         <div className="panel rounded-2xl p-4 shadow-sm dark:shadow-none">
