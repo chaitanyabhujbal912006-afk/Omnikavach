@@ -163,7 +163,7 @@ def run_chief_agent(raw_notes: str, raw_labs_text: str, wbc_array: list[float]) 
         Synthesize the patient history and labs into a Diagnostic Risk Report.
         
         RULES:
-        1. If the Math Anomaly Detector says TRUE, you MUST include a severe warning in 'safety_caveat'.
+        1. If the Math Anomaly Detectors says TRUE, you MUST include a severe warning in 'safety_caveat'.
         2. OUTPUT STRICTLY VALID JSON. No markdown blocks, just the JSON object.
         
         JSON SCHEMA:
